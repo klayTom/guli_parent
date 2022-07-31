@@ -1,13 +1,20 @@
 package com.jj.edu.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jj.commonutils.R;
+import com.jj.edu.entity.EduCourse;
 import com.jj.edu.entity.vo.CourseInfoVo;
 import com.jj.edu.entity.vo.CoursePublishVo;
+import com.jj.edu.entity.vo.CourseQuery;
 import com.jj.edu.service.CourseService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/edu/course")
@@ -44,6 +51,54 @@ public class CourseController {
     public R getCoursePublishVo(@PathVariable String id) {
         CoursePublishVo coursePublishVo = courseService.getCoursePublishVo(id);
         return R.ok().data("coursePublishVo",coursePublishVo);
+    }
+
+    // 条件查询课程并分页
+    @PostMapping("pageCourseCondition/{current}/{limit}")
+    public R pageCourseCondition(@PathVariable Long current,
+                                 @PathVariable Long limit,
+                                 @RequestBody(required = false) CourseQuery courseQuery) {
+        Page<EduCourse> pageCourse = new Page<>(current, limit);
+
+        QueryWrapper<EduCourse> wrapper = new QueryWrapper<>();
+
+        String title = courseQuery.getTitle();
+        String status = courseQuery.getStatus();
+
+        if (!StringUtils.isEmpty(title)) {
+            wrapper.like("title", title);
+        }
+
+        if (!StringUtils.isEmpty(status)) {
+            wrapper.eq("status", status);
+        }
+
+        courseService.page(pageCourse, wrapper);
+        // 按照时间降序排序
+        wrapper.orderByDesc("gmt_create");
+
+        long total = pageCourse.getTotal();
+        List<EduCourse> records = pageCourse.getRecords();
+
+        return R.ok().data("total", total).data("list",records);
+
+    }
+
+    // 删除课程
+    @DeleteMapping("{id}")
+    public R deleteCourse(@PathVariable String id) {
+        courseService.deleteCourse(id);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "课程最终发布修改课程状态")
+    @PostMapping("publishCourse/{id}")
+    public R publishCourse(@PathVariable String id) {
+        EduCourse eduCourse = new EduCourse();
+        eduCourse.setId(id);
+        eduCourse.setStatus("Normal");//设置课程发布状态
+        courseService.updateById(eduCourse);
+        return R.ok();
     }
 }
 

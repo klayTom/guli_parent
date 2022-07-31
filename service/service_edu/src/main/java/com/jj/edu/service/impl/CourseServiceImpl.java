@@ -5,9 +5,11 @@ import com.jj.edu.entity.EduCourseDescription;
 import com.jj.edu.entity.vo.CourseInfoVo;
 import com.jj.edu.entity.vo.CoursePublishVo;
 import com.jj.edu.mapper.CourseMapper;
+import com.jj.edu.service.ChapterService;
 import com.jj.edu.service.CourseDescriptionService;
 import com.jj.edu.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jj.edu.service.VideoService;
 import com.jj.servicebase.exceptionhandler.GuliException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, EduCourse> impl
     //课程描述注入
     @Autowired
     private CourseDescriptionService courseDescriptionService;
+
+    @Autowired
+    private ChapterService chapterService;
+
+    @Autowired
+    private VideoService videoService;
+
 
     @Override
     public String saveCourseInfo(CourseInfoVo courseInfoVo) {
@@ -79,5 +88,20 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, EduCourse> impl
     public CoursePublishVo getCoursePublishVo(String id) {
         CoursePublishVo coursePublishVo = baseMapper.getCoursePublishVo(id);
         return coursePublishVo;
+    }
+
+    @Override
+    public void deleteCourse(String id) {
+        // 1. 根据课程id删除小节
+        videoService.deleteByCourseId(id);
+        // 2. 根据课程id删除章节
+        chapterService.deleteByCourseId(id);
+        // 3. 根据课程id删除描述
+        courseDescriptionService.removeById(id);
+        // 4. 删除课程
+        int result = baseMapper.deleteById(id);
+        if (result == 0) {
+            throw new GuliException(2001, "删除失败");
+        }
     }
 }
