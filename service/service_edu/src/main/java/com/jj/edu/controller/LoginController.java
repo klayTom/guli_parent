@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/edu/user")
-@CrossOrigin // 解决跨域问题
+ // 解决跨域问题
 public class LoginController {
     @PostMapping("login")
     public R login(){

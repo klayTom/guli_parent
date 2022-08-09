@@ -10,4 +10,8 @@ public class VideoVo {
     private String id;
 
     private String title;
+
+    private Integer isFree;
+
+    private String videoSourceId;
 }

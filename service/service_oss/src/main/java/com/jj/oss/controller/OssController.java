@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Api(description = "oss模块")
 @Controller
 @RequestMapping("/eduoss/fileUpload")
-@CrossOrigin
+
 public class OssController {
     @Autowired
     private OssService ossService;

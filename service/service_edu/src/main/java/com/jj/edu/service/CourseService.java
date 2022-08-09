@@ -1,9 +1,16 @@
 package com.jj.edu.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jj.edu.entity.EduCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jj.edu.entity.frontvo.CourseQueryVo;
+import com.jj.edu.entity.frontvo.CourseWebVo;
 import com.jj.edu.entity.vo.CourseInfoVo;
 import com.jj.edu.entity.vo.CoursePublishVo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,4 +35,12 @@ public interface CourseService extends IService<EduCourse> {
     CoursePublishVo getCoursePublishVo(String id);
 
     void deleteCourse(String id);
+
+    // 根据课程id排序 显示前8条课程
+    List<EduCourse> getIndexCourse();
+
+    Map<String, Object> getCourseFrontList(Page<EduCourse> page, CourseQueryVo courseQueryVo);
+
+    //1 根据课程id得到课程详细信息
+    CourseWebVo getBaseCourseInfo(String courseId);
 }

@@ -2,6 +2,8 @@ package com.jj.vod.controller;
 
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.jj.commonutils.R;
 import com.jj.servicebase.exceptionhandler.GuliException;
 import com.jj.vod.service.VodService;
@@ -11,11 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.Path;
 import java.util.List;
 
 @RestController
 @RequestMapping("/eduvod/video")
-@CrossOrigin
+
 public class VodController {
 
     @Autowired
@@ -40,4 +43,27 @@ public class VodController {
         vodService.deleteVodBatch(videoIds);
         return R.ok();
     }
+
+    // 根据视频id得到播放凭证
+    @GetMapping("playAuth/{vid}")
+    public R getPlayAuth(@PathVariable String vid) {
+        try {
+            //创建初始化对象
+            DefaultAcsClient client = InitVodClient.initVodClient(ConstantVodUtils.ACCESS_KEY_ID, ConstantVodUtils.ACCESS_KEY_SECRET);
+
+            //创建获取视频地址request和response
+            GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
+            GetVideoPlayAuthResponse response = new GetVideoPlayAuthResponse();
+
+            //向request对象里面设置视频id
+            request.setVideoId(vid);
+
+            //调用初始化对象里面的方法，传递request，获取数据
+            response = client.getAcsResponse(request);
+            return R.ok().data("playAuth", response.getPlayAuth());
+        }catch (Exception e) {
+            throw new GuliException(20001, "获取凭证失败");
+        }
+    }
+
 }

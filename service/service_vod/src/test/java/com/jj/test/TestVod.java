@@ -57,11 +57,11 @@ public class TestVod {
         GetVideoPlayAuthResponse response = new GetVideoPlayAuthResponse();
 
         //向request对象里面设置视频id
-        request.setVideoId("d8150bc7650342a0b92cfc28862e297b");
+        request.setVideoId("8cf26fc9ed2a43a58f999bffb1041be3");
 
         //调用初始化对象里面的方法，传递request，获取数据
         response = client.getAcsResponse(request);
-        System.out.println("playauth："+response.getPlayAuth());
+        System.out.println("playauth:"+response.getPlayAuth());
     }
 
     //根据视频id获取视频播放地址

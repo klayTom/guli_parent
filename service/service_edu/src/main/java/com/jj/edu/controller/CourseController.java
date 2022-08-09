@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/edu/course")
-@CrossOrigin
 public class CourseController {
     @Autowired
     private CourseService courseService;
@@ -73,9 +72,10 @@ public class CourseController {
             wrapper.eq("status", status);
         }
 
-        courseService.page(pageCourse, wrapper);
         // 按照时间降序排序
         wrapper.orderByDesc("gmt_create");
+        courseService.page(pageCourse, wrapper);
+
 
         long total = pageCourse.getTotal();
         List<EduCourse> records = pageCourse.getRecords();
